@@ -38,8 +38,8 @@ void ofApp::setup(){
 //    printer.printBarcode("12345678", EAN8);
     
     img.loadImage("logo.jpg");
-//    img.resize(100, 100);
-//    img.resize(img.getWidth()*1.5,img.getHeight()*1.5);
+//    img.loadImage("tux.jpg");
+    img.resize(img.getWidth()*1.5,img.getHeight()*2.0);
     cout << "Image at " << img.getWidth() << "x" << img.getHeight() << endl;
 }
 
@@ -62,6 +62,7 @@ void ofApp::exit(){
 void ofApp::keyPressed  (int key){ 
 	if(key == ' '){
         printer.printImage(img);
+//        printer.println("A little tree");
     }
 }
 

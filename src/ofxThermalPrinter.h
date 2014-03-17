@@ -16,6 +16,17 @@
 #include "ofMain.h"
 #include "serial.h"
 
+// Though most of these printers are factory configured for 19200 baud
+// operation, a few rare specimens instead work at 9600.  If so, change
+// this constant.  This will NOT make printing slower!  The physical
+// print and feed mechanisms are the limiting factor, not the port speed.
+#define BAUDRATE  19200
+
+// Number of microseconds to issue one byte to the printer.  11 bits
+// (not 8) to accommodate idle, start and stop bits.  Idle time might
+// be unnecessary, but erring on side of caution here.
+#define BYTE_TIME (11L * 1000000L / BAUDRATE)
+
 enum CharacterSet {
     USA              = 0,
     FRANCE           = 1,
@@ -78,7 +89,7 @@ public:
     void    close();
     void    reset();
     
-    void    setControlParameter(uint8_t heatingDots=20, uint8_t heatingTime=255, uint8_t heatingInterval=250);
+    void    setControlParameter(uint8_t heatingDots=20, uint8_t heatingTime=200, uint8_t heatingInterval=250);
     void    setSleepTime(uint8_t seconds = 0);
     void    setStatus(bool state=true);
     void    setPrintDensity(uint8_t printDensity=14, uint8_t printBreakTime=4);
@@ -110,6 +121,14 @@ public:
     void    printImage(ofImage &img, uint8_t threshold=127);
     
 private:
+    static uint8_t getHighByte(std::size_t d){
+        return (uint8_t)(d >> 8);
+    }
+    
+    static uint8_t getLowByte(std::size_t d){
+        return (uint8_t)(d & 0xFF);
+    }
+    
     typedef std::shared_ptr<serial::Serial> SharedSerial;
 
     SharedSerial    port;
