@@ -315,8 +315,6 @@ void ofxThermalPrinter::printDitherImage(ofBaseHasPixels &_img, int _threshold){
             port->write(&data[y*rowBytesClipped+x],1);
             usleep(BYTE_TIME);
         }
-        
-        usleep(BYTE_TIME*10);
     }
 }
 
@@ -381,8 +379,6 @@ void ofxThermalPrinter::printThresholdImage(ofBaseHasPixels &_img, int threshold
             port->write(&data[y*rowBytesClipped+x],1);
             usleep(BYTE_TIME);
         }
-        
-        usleep(BYTE_TIME*10);
     }
 }
 
