@@ -109,7 +109,6 @@ public:
     void    setAlign(AlignMode align=LEFT);
     void    setLeftBlankCharNums(uint8_t space=0);
     
-    
     void    setBarcodePrintReadable(PrintReadable n=BELOW);
     void    setBarcodeHeight(uint8_t height=50);
     void    setBarCodeWidth(uint8_t width=3);
@@ -117,8 +116,9 @@ public:
     void    print(const std::string &_line);
     void    println(const std::string &_line);
     void    printBarcode(const std::string &data, BarcodeType type=UPCA);
+    void    printDitherImage(ofBaseHasPixels &_img, int threshold);
+    void    printThresholdImage(ofBaseHasPixels &_img, int threshold);
     
-    void    printImage(ofImage &img, uint8_t threshold=127);
     
 private:
     static uint8_t getHighByte(std::size_t d){

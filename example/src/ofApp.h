@@ -22,5 +22,7 @@ public:
 	
 	ofxThermalPrinter printer;
     ofImage img;
+    
+    ofVideoGrabber  video;
 };
 

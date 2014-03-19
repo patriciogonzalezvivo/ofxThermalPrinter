@@ -7,11 +7,11 @@ void ofApp::setup(){
 
     printer.open("/dev/tty.PL2303-00002014");
     
-    printer.println("Hello World!");
+//    printer.println("Hello World!");
     
-//    printer.setReverse(true);
-//    printer.println("Reverse ON");
-//    printer.setReverse(false);
+    printer.setReverse(true);
+    printer.println("Reverse ON");
+    printer.setReverse(false);
     
 //    printer.setBold(true);
 //    printer.println("Bold ON");
@@ -38,20 +38,24 @@ void ofApp::setup(){
 //    printer.printBarcode("12345678", EAN8);
     
     img.loadImage("logo.jpg");
-//    img.loadImage("tux.jpg");
-    img.resize(img.getWidth()*1.5,img.getHeight()*2.0);
+    img.resize(img.getWidth()*2,img.getHeight()*2);
     cout << "Image at " << img.getWidth() << "x" << img.getHeight() << endl;
+    
+    video.initGrabber(640, 480);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-	
+	video.update();
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofBackground(0);
+    ofBackground(255);
     img.draw(0, 0);
+    video.draw(img.getWidth(),0);
+    
 }
 
 void ofApp::exit(){
@@ -61,8 +65,11 @@ void ofApp::exit(){
 //--------------------------------------------------------------
 void ofApp::keyPressed  (int key){ 
 	if(key == ' '){
-        printer.printImage(img);
-//        printer.println("A little tree");
+        printer.printDitherImage(img,80);
+    } else if (key == 't'){
+        printer.println("A little tree");
+    } else if (key == 'v'){
+        printer.printDitherImage(video,180);
     }
 }
 

@@ -10,23 +10,25 @@ void ofxThermalPrinter::open(const std::string& portName){
                                             serial::eightbits,
                                             serial::parity_none,
                                             serial::stopbits_one,
-                                            serial::flowcontrol_software ));
+                                            serial::flowcontrol_none ));
     
-    port->setDTR(true);
-    port->setRTS(true);
+//    port->setDTR(true);
+//    port->setRTS(true);
     
-    usleep(10000);
-
+    usleep(50000);
+    
     reset();
-    usleep(10000);
+    usleep(50000);
     
-    setStatus(true);
     setControlParameter();
     setPrintDensity();
-    setSleepTime();
-    setCodeTable();
-    setCharacterSet();
-    setBarcodePrintReadable();
+    setStatus(true);
+//    setSleepTime();
+//    setCodeTable();
+//    setCharacterSet();
+//    setBarcodePrintReadable();
+    
+    port->flushOutput();
 }
 
 void ofxThermalPrinter::close(){
@@ -193,14 +195,18 @@ void ofxThermalPrinter::setBarCodeWidth(uint8_t width) {
 }
 
 void ofxThermalPrinter::print(const std::string& text){
+//    for (int i = 0; i < text.size(); i++) {
+//        const uint8_t c = text[i];
+//        port->write(&c,1);
+//        usleep(BYTE_TIME);
+//    }
     port->write(text);
     usleep(BYTE_TIME*text.size());
 }
 
 
 void ofxThermalPrinter::println(const std::string& text){
-    port->write(text+"\n");
-    usleep(BYTE_TIME*(text.size()+1));
+    print(text+"\n");
 }
 
 // prints a barcode
@@ -215,19 +221,115 @@ void ofxThermalPrinter::printBarcode(const std::string &data, BarcodeType type) 
     usleep(BYTE_TIME);
 }
 
-// print Image, threshold defines grayscale to black&withe threshold level
-void ofxThermalPrinter::printImage(ofImage &img, uint8_t threshold) {
-    ofPixels pixels;
+void ofxThermalPrinter::printDitherImage(ofBaseHasPixels &_img, int _threshold){
+    ofPixels pixels = _img.getPixelsRef();
     
-    if(img.getWidth() >= 384){
+    if(_img.getPixelsRef().getWidth() >= 384){
         float w = 1.0;
-        float h = img.getHeight()/img.getWidth();
-        ofImage tmp;
-        tmp = img;
-        tmp.resize(384.0, h*384.0);
-        pixels = tmp.getPixelsRef();
+        float h = pixels.getHeight()/pixels.getWidth();
+        pixels.resize(384.0, h*384.0);
     } else {
-        pixels = img.getPixelsRef();
+        pixels = _img.getPixelsRef();
+    }
+    
+    int width = pixels.getWidth();
+    int height = pixels.getHeight();
+    
+    int GrayArrayLength = width * height;
+    unsigned char * GrayArray = new unsigned char[GrayArrayLength];
+    memset(GrayArray,0x00,GrayArrayLength);
+    
+    int rowBytes        = (width + 7) / 8;                  // Round up to next byte boundary
+    int rowBytesClipped = (rowBytes >= 48) ? 48 : rowBytes; // 384 pixels max width
+    
+    int totalBytes = rowBytesClipped*height;
+    uint8_t data[totalBytes];
+    memset(data,0x00,totalBytes);
+    
+    for (int i = 0; i < GrayArrayLength; i++){
+        GrayArray[i] = 0;
+    }
+    
+    for (int x = 0; x < width;x++) {
+        for (int y = 0; y < height; y++) {
+            int loc = y*width + x;
+            
+            int pixelCt = 0;
+            float brightTot = 0;
+            
+            ofColor c = pixels.getColor(x, y);
+            float brightTemp = c.getBrightness();
+            
+            // Brightness correction curve:
+            brightTemp =  sqrt(255) * sqrt (brightTemp);
+            if (brightTemp > 255) brightTemp = 255;
+            if (brightTemp < 0) brightTemp = 0;
+            
+            int darkness = 255 - floor(brightTemp);
+            
+            int idx = y*width + x;
+            darkness += GrayArray[idx];
+            
+            if(x<rowBytesClipped*8){
+                
+                uint8_t pixel;
+                if( darkness >= _threshold){
+                    darkness -= _threshold;
+                    pixel = 0x01;
+                } else {
+                    pixel = 0x00;
+                }
+                
+                data[y*rowBytesClipped+x/8] += (pixel&0x01)<<(7-x%8);
+            }
+            
+            int darkn8 = round(darkness / 8);
+            
+            // Atkinson dithering algorithm:  http://verlagmartinkoch.at/software/dither/index.html
+            // Distribute error as follows:
+            //     [ ]  1/8  1/8
+            //1/8  1/8  1/8
+            //     1/8
+            
+            if ((idx + 1) < GrayArrayLength)
+                GrayArray[idx + 1] += darkn8;
+            if ((idx + 2) < GrayArrayLength)
+                GrayArray[idx + 2] += darkn8;
+            if ((idx + width - 1) < GrayArrayLength)
+                GrayArray[idx + width - 1] += darkn8;
+            if ((idx + width) < GrayArrayLength)
+                GrayArray[idx + width] += darkn8;
+            if ((idx + width + 1) < GrayArrayLength)
+                GrayArray[idx + width + 1 ] += darkn8;
+            if ((idx + 2 * width) < GrayArrayLength)
+                GrayArray[idx + 2 * width] += darkn8;
+        }
+    }
+    
+    for (int y=0; y<height; y++) {
+        const uint8_t command[4] = {18, 42, 1, rowBytesClipped};
+        port->write(command, 4);
+        usleep(BYTE_TIME*4);
+        
+        for (int x=0; x<rowBytesClipped; x++) {
+            port->write(&data[y*rowBytesClipped+x],1);
+            usleep(BYTE_TIME);
+        }
+        
+        usleep(BYTE_TIME*10);
+    }
+}
+
+// print Image, threshold defines grayscale to black&withe threshold level
+void ofxThermalPrinter::printThresholdImage(ofBaseHasPixels &_img, int threshold) {
+    ofPixels pixels = _img.getPixelsRef();
+
+    if(_img.getPixelsRef().getWidth() >= 384){
+        float w = 1.0;
+        float h = pixels.getHeight()/pixels.getWidth();
+        pixels.resize(384.0, h*384.0);
+    } else {
+        pixels = _img.getPixelsRef();
     }
 
     int width = pixels.getWidth();
@@ -238,33 +340,49 @@ void ofxThermalPrinter::printImage(ofImage &img, uint8_t threshold) {
     
     int totalBytes = rowBytesClipped*height;
     uint8_t data[totalBytes];
-    memset(data, 0, totalBytes);
+    memset(data,0x00,totalBytes);
     
     for (int y=0; y < height; y++) {
         for (int x=0; x < width; x++) {
             if(x<rowBytesClipped*8){
-                uint8_t pixel = pixels.getColor(x, y).getBrightness() > threshold ? 0:1;
+                uint8_t pixel;
+                if(pixels.getColor(x, y).getBrightness()>threshold){
+                    pixel = 0x00;
+                } else {
+                    pixel = 0x01;
+                }
                 data[y*rowBytesClipped+x/8] += (pixel&0x01)<<(7-x%8);
             }
         }
     }
     
     // split images with height > 255 into parts (from Adafruit)
-    for (int rowStart=0; rowStart<height; rowStart+=256) {
-        
-        int chunkHeight = height - rowStart;
-        if (chunkHeight > 255) chunkHeight = 255;
-        
-        const uint8_t command[4] = {18, 42, chunkHeight, rowBytesClipped};
+//    for (int rowStart=0; rowStart<height; rowStart+=256) {
+//        
+//        int chunkHeight = height - rowStart;
+//        if (chunkHeight > 255) chunkHeight = 255;
+//        
+//        const uint8_t command[4] = {18, 42, chunkHeight, rowBytesClipped};
+//        port->write(command, 4);
+//        usleep(BYTE_TIME*4);
+//        
+//        for (int i=0; i<(rowBytesClipped*chunkHeight); i++) {
+//            port->write(&data[rowStart*rowBytesClipped+i],1);
+//            usleep(BYTE_TIME);
+//        }
+//    }
+    
+    for (int y=0; y<height; y++) {
+        const uint8_t command[4] = {18, 42, 1, rowBytesClipped};
         port->write(command, 4);
         usleep(BYTE_TIME*4);
         
-        for (int i=0; i<(rowBytesClipped*chunkHeight); i++) {
-            port->write(&data[rowStart*rowBytesClipped+i],1);
+        for (int x=0; x<rowBytesClipped; x++) {
+            port->write(&data[y*rowBytesClipped+x],1);
             usleep(BYTE_TIME);
         }
         
-        usleep(30000);
+        usleep(BYTE_TIME*10);
     }
 }
 
