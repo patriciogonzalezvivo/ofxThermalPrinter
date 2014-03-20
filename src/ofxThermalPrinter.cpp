@@ -1,16 +1,28 @@
 #include "ofxThermalPrinter.h"
 
 ofxThermalPrinter::ofxThermalPrinter(){
+    bConnected = false;
+    bPrinting = false;
 }
 
-void ofxThermalPrinter::open(const std::string& portName){
-    port = SharedSerial(new serial::Serial( portName,
-                                            BAUDRATE,
-                                            serial::Timeout::simpleTimeout(1000),
-                                            serial::eightbits,
-                                            serial::parity_none,
-                                            serial::stopbits_one,
-                                            serial::flowcontrol_none ));
+bool ofxThermalPrinter::open(const std::string& portName){
+    try {
+        port = SharedSerial(new serial::Serial( portName,
+                                               BAUDRATE,
+                                               serial::Timeout::simpleTimeout(1000),
+                                               serial::eightbits,
+                                               serial::parity_none,
+                                               serial::stopbits_one,
+                                               serial::flowcontrol_none ));
+    }
+    
+    catch (const std::exception& exc){
+        ofLogError("ofxThermalPrinter:: Fail to open") << exc.what();
+        bConnected = false;
+        return bConnected;
+    }
+
+    bConnected = true;
     usleep(50000);
     reset();
     usleep(50000);
@@ -24,11 +36,15 @@ void ofxThermalPrinter::open(const std::string& portName){
     setReverse(true);
     println("Reverse ON");
     setReverse(false);
+    
+    return bConnected;
 }
 
 void ofxThermalPrinter::write(const uint8_t &_a){
-    port->write(&_a, 1);
-    usleep(BYTE_TIME);
+    if(bConnected){
+        port->write(&_a, 1);
+        usleep(BYTE_TIME);
+    }
 }
 
 void ofxThermalPrinter::write(const uint8_t &_a,const uint8_t &_b ){
@@ -50,12 +66,16 @@ void ofxThermalPrinter::write(const uint8_t &_a, const uint8_t &_b, const uint8_
 }
 
 void ofxThermalPrinter::write(const uint8_t *_array, int _size){
-    port->write(_array, _size);
-    usleep(BYTE_TIME*_size);
+    if(bConnected){
+        port->write(_array, _size);
+        usleep(BYTE_TIME*_size);
+    }
 }
 
 void ofxThermalPrinter::close(){
-    port->close();
+    if(bConnected){
+        port->close();
+    }
 }
 
 // reset the printer
@@ -175,8 +195,10 @@ void ofxThermalPrinter::setBarCodeWidth(uint8_t width) {
 }
 
 void ofxThermalPrinter::print(const std::string& text){
-    port->write(text);
-    usleep(BYTE_TIME*text.size());
+    if(bConnected){
+        port->write(text);
+        usleep(BYTE_TIME*text.size());
+    }
 }
 
 
@@ -186,10 +208,12 @@ void ofxThermalPrinter::println(const std::string& text){
 
 // prints a barcode
 void ofxThermalPrinter::printBarcode(const std::string &data, BarcodeType type) {
-    write(29, 107, type);
-    port->write(data);
-    usleep(BYTE_TIME*data.size());
-    write(0);
+    if(bConnected){
+        write(29, 107, type);
+        port->write(data);
+        usleep(BYTE_TIME*data.size());
+        write(0);
+    }
 }
 
 void ofxThermalPrinter::printDitherImage(ofBaseHasPixels &_img, int _threshold){
@@ -208,21 +232,11 @@ void ofxThermalPrinter::printDitherImage(ofBaseHasPixels &_img, int _threshold){
     
     int GrayArrayLength = width * height;
     unsigned char * GrayArray = new unsigned char[GrayArrayLength];
-    memset(GrayArray,0x00,GrayArrayLength);
+    memset(GrayArray,0,GrayArrayLength);
     
-    int rowBytes        = (width + 7) / 8;                  // Round up to next byte boundary
-    int rowBytesClipped = (rowBytes >= 48) ? 48 : rowBytes; // 384 pixels max width
-    
-    int totalBytes = rowBytesClipped*height;
-    uint8_t data[totalBytes];
-    memset(data,0x00,totalBytes);
-    
-    for (int i = 0; i < GrayArrayLength; i++){
-        GrayArray[i] = 0;
-    }
-    
-    for (int x = 0; x < width;x++) {
-        for (int y = 0; y < height; y++) {
+    for (int y = 0; y < height;y++) {
+        vector<bool> data;
+        for (int x = 0; x < width; x++) {
             int loc = y*width + x;
             
             int pixelCt = 0;
@@ -241,17 +255,11 @@ void ofxThermalPrinter::printDitherImage(ofBaseHasPixels &_img, int _threshold){
             int idx = y*width + x;
             darkness += GrayArray[idx];
             
-            if(x<rowBytesClipped*8){
-                
-                uint8_t pixel;
-                if( darkness >= _threshold){
-                    darkness -= _threshold;
-                    pixel = 0x01;
-                } else {
-                    pixel = 0x00;
-                }
-                
-                data[y*rowBytesClipped+x/8] += (pixel&0x01)<<(7-x%8);
+            if( darkness >= _threshold){
+                darkness -= _threshold;
+                data.push_back(true);
+            } else {
+                data.push_back(false);
             }
             
             int darkn8 = round(darkness / 8);
@@ -275,24 +283,7 @@ void ofxThermalPrinter::printDitherImage(ofBaseHasPixels &_img, int _threshold){
             if ((idx + 2 * width) < GrayArrayLength)
                 GrayArray[idx + 2 * width] += darkn8;
         }
-    }
-    
-    for (int y=0; y<height; y++) {
-        writeBytesRow(&data[y*rowBytesClipped],rowBytesClipped);
-    }
-}
-
-void ofxThermalPrinter::writeBytesRow(const uint8_t *_array, int _width){
-    if(_width>48)
-        _width = 48;
-    
-    const uint8_t command[4] = {18, 42, 1, _width};
-    port->write(command, 4);
-    usleep(BYTE_TIME*4);
-    
-    for (int x=0; x<_width; x++) {
-        port->write(&_array[_width+x],1);
-        usleep(BYTE_TIME);
+        addToBuffer(data);
     }
 }
 
@@ -310,8 +301,6 @@ void ofxThermalPrinter::printThresholdImage(ofBaseHasPixels &_img, int threshold
 
     int width = pixels.getWidth();
     int height = pixels.getHeight();
-
-    
     for (int y=0; y < height; y++) {
         vector<bool> data;
         for (int x=0; x < width; x++) {
@@ -333,7 +322,9 @@ void ofxThermalPrinter::addToBuffer(vector<bool> _vector){
         }
     } else {
         buffer.push_back(_vector);
+        
         cout << "START: printing" << endl;
+        bPrinting = true;
         startThread();
     }
 }
@@ -341,17 +332,17 @@ void ofxThermalPrinter::addToBuffer(vector<bool> _vector){
 void ofxThermalPrinter::threadedFunction(){
     while(isThreadRunning()){
         if(buffer.size()>0){
-            writeBytesArray(buffer[0]);
+            printPixelRow(buffer[0]);
             buffer.erase(buffer.begin());
         } else {
             stopThread();
+            bPrinting = false;
             cout << "END: printing" << endl;
         }
     }
 }
 
-void ofxThermalPrinter::writeBytesArray(vector<bool> _line){
-    
+void ofxThermalPrinter::printPixelRow(vector<bool> _line){
     int width = _line.size();
     if(width>384)
         width = 384;

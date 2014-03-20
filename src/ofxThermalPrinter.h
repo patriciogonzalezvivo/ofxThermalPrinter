@@ -91,7 +91,7 @@ class ofxThermalPrinter : public ofThread {
 public:
     ofxThermalPrinter();
 
-    void    open(const std::string& portName);
+    bool    open(const std::string& portName);
     void    close();
     void    reset();
     
@@ -122,7 +122,9 @@ public:
     void    print(const std::string &_line);
     void    println(const std::string &_line);
     void    printBarcode(const std::string &data, BarcodeType type=UPCA);
-    void    printDitherImage(ofBaseHasPixels &_img, int threshold);
+    void    printPixelRow( vector<bool> _row );
+    
+    void    printDitherImage(ofBaseHasPixels &_img, int threshold=127);
     void    printThresholdImage(ofBaseHasPixels &_img, int threshold);
 
 private:
@@ -132,13 +134,13 @@ private:
     void    write(const uint8_t &_a, const uint8_t &_b, const uint8_t &_c, const uint8_t &_d);
     void    write(const uint8_t *_array, int _size);
     
-    void    writeBytesRow(const uint8_t *_array, int _width);
-    void    writeBytesArray( vector<bool> _line );
-    
     void    addToBuffer(vector<bool> _line);
     void    threadedFunction();
     
     vector< vector<bool> > buffer;
     
     SharedSerial    port;
+    
+    bool    bPrinting;
+    bool    bConnected;
 };

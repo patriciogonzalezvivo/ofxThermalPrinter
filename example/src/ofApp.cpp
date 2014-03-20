@@ -9,7 +9,6 @@ void ofApp::setup(){
     
     img.loadImage("logo.jpg");
     img.resize(img.getWidth()*2,img.getHeight()*2);
-    cout << "Image at " << img.getWidth() << "x" << img.getHeight() << endl;
     
     video.initGrabber(640, 480);
 }
@@ -17,15 +16,12 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 	video.update();
-    
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofBackground(255);
-    img.draw(0, 0);
-    video.draw(img.getWidth(),0);
-    
+    ofBackground(0);
+    video.draw(0,0);
 }
 
 void ofApp::exit(){
@@ -35,11 +31,9 @@ void ofApp::exit(){
 //--------------------------------------------------------------
 void ofApp::keyPressed  (int key){ 
 	if(key == ' '){
-        printer.printThresholdImage(img,80);
+        printer.printDitherImage(video);
     } else if (key == 't'){
-        printer.println("A little tree");
-    } else if (key == 'v'){
-        printer.printDitherImage(video,180);
+        printer.println("Hello World!!");
     } else if (key == 'r'){
         printer.setReverse(true);
         printer.println("Reverse ON");
@@ -70,6 +64,9 @@ void ofApp::keyPressed  (int key){
         printer.setAlign(LEFT);
     } else if(key == 'c'){
         printer.printBarcode("12345678", EAN8);
+    } else if(key != OF_KEY_ESC){
+        printer.println("Patricio Gonzalez Vivo.com");
+        printer.printThresholdImage(img,127);
     }
 }
 
