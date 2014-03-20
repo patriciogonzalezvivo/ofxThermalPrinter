@@ -119,6 +119,13 @@ public:
     void    printDitherImage(ofBaseHasPixels &_img, int threshold);
     void    printThresholdImage(ofBaseHasPixels &_img, int threshold);
     
+    void    write(const uint8_t &_a);
+    void    write(const uint8_t &_a, const uint8_t &_b );
+    void    write(const uint8_t &_a, const uint8_t &_b, const uint8_t &_c );
+    void    write(const uint8_t &_a, const uint8_t &_b, const uint8_t &_c, const uint8_t &_d);
+    void    write(const uint8_t *_array, int _size);
+    void    writeBytesRow(const bool *_array, int _width);
+    void    writeBytesRow(const uint8_t *_array, int _width);
     
 private:
     static uint8_t getHighByte(std::size_t d){

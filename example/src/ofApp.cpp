@@ -7,33 +7,12 @@ void ofApp::setup(){
 
     printer.open("/dev/tty.PL2303-00002014");
     
-//    printer.println("Hello World!");
     
-    printer.setReverse(true);
-    printer.println("Reverse ON");
-    printer.setReverse(false);
     
-//    printer.setBold(true);
-//    printer.println("Bold ON");
-//    printer.setBold(false);
 
-//    printer.setUpDown(true);
-//    printer.println("UpDown ON");
-//    printer.setUpDown(false);
 
-//    printer.setUnderline(true);
-//    printer.println("Underline ON");
-//    printer.setUnderline(false);
 
-//    printer.setDoubleWidth(true);
-//    printer.println("Double Width ON");
-//    printer.setDoubleWidth(false);
     
-//    printer.setAlign(MIDDLE);
-//    printer.println("middle align");
-//    printer.setAlign(RIGHT);
-//    printer.println("right align");
-//    printer.setAlign(LEFT);
     
 //    printer.printBarcode("12345678", EAN8);
     
@@ -70,6 +49,34 @@ void ofApp::keyPressed  (int key){
         printer.println("A little tree");
     } else if (key == 'v'){
         printer.printDitherImage(video,180);
+    } else if (key == 'r'){
+        printer.setReverse(true);
+        printer.println("Reverse ON");
+        printer.setReverse(false);
+    } else if(key == 'b'){
+        printer.setBold(true);
+        printer.println("Bold ON");
+        printer.setBold(false);
+    } else if(key == 'u'){
+        printer.setUpDown(true);
+        printer.println("UpDown ON");
+        printer.setUpDown(false);
+    } else if(key == 'l'){
+        printer.setUnderline(true);
+        printer.println("Underline ON");
+        printer.setUnderline(false);
+    } else if(key == 'd'){
+        printer.setDoubleWidth(true);
+        printer.println("Double Width ON");
+        printer.setDoubleWidth(false);
+    } else if(key == 'a'){
+        printer.setAlign(LEFT);
+        printer.println("left align");
+        printer.setAlign(MIDDLE);
+        printer.println("middle align");
+        printer.setAlign(RIGHT);
+        printer.println("right align");
+        printer.setAlign(LEFT);
     }
 }
 

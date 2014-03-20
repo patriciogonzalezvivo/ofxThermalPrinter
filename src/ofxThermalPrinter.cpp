@@ -29,6 +29,10 @@ void ofxThermalPrinter::open(const std::string& portName){
 //    setBarcodePrintReadable();
     
     port->flushOutput();
+    
+    setReverse(true);
+    println("Reverse ON");
+    setReverse(false);
 }
 
 void ofxThermalPrinter::close(){
@@ -38,150 +42,110 @@ void ofxThermalPrinter::close(){
 
 // reset the printer
 void ofxThermalPrinter::reset() {
-    const uint8_t command[2] = { 27, '@' };
-    port->write(command, 2);
-    usleep(BYTE_TIME*2);
+    write(27,'@');
 }
 
 // sets the printer online (true) or ofline (false)
 void ofxThermalPrinter::setStatus(bool state) {
-    const uint8_t command[3] = { 27, 61, state };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
+    write(27,61,state);
 }
 
 // set control parameters: heatingDots, heatingTime, heatingInterval
 void ofxThermalPrinter::setControlParameter(uint8_t heatingDots, uint8_t heatingTime, uint8_t heatingInterval) {
-    const uint8_t command[5] = { 27, 55, heatingDots, heatingTime, heatingInterval};
-    port->write(command, 5);
-    usleep(BYTE_TIME*5);
+    write(27,55);
+    write(heatingDots);
+    write(heatingTime);
+    write(heatingInterval);
 }
 
 // set sleep Time in seconds, time after last print the printer should stay awake
 void ofxThermalPrinter::setSleepTime(uint8_t seconds) {
-    const uint8_t command[3] = { 27, 56, seconds };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
-    const uint8_t a = 0xFF;
-    port->write(&a, 1);
-    usleep(BYTE_TIME);
+    write(27, 56, seconds);
+    write(0xFF);
 }
 
 // set double width mode: on=true, off=false
 void ofxThermalPrinter::setDoubleWidth(bool state) {
-    const uint8_t command[2] = { 27, state?14:20 };
-    port->write(command, 2);
-    usleep(BYTE_TIME*2);
+    write(27, state?14:20);
 }
 
 
 // set the print density and break time
 void ofxThermalPrinter::setPrintDensity(uint8_t printDensity, uint8_t printBreakTime) {
-    const uint8_t command[3] = { 18, 35, (printBreakTime << 5) | printDensity };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
+    write(18, 35, (printBreakTime << 5) | printDensity );
 }
 
 // set the used character set
 void ofxThermalPrinter::setCharacterSet(CharacterSet set) {
-    const uint8_t command[3] = { 27, 82, set };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
+    write(27, 82, set);
 }
 
 // set the used code table
 void ofxThermalPrinter::setCodeTable(CodeTable table) {
-    const uint8_t command[3] = { 27, 116, table };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
+    write(27, 116, table);
 }
 
 // feed single line
 void ofxThermalPrinter::feed(void) {
-    const uint8_t nl = 10;
-    port->write(&nl, 1);
-    usleep(BYTE_TIME);
+    write(10);
 }
 
 // feed <<lines>> lines
 void ofxThermalPrinter::feed(uint8_t lines) {
-    const uint8_t command[3] = { 27, 74, lines };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
+    write(27, 74, lines);
 }
 
 // set line spacing
 void ofxThermalPrinter::setLineSpacing(uint8_t spacing) {
-    const uint8_t command[3] = { 27, 51, spacing };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
+    write(27, 51, spacing);
 }
 
 // set Align Mode: LEFT, MIDDLE, RIGHT
 void ofxThermalPrinter::setAlign(AlignMode align) {
-    const uint8_t command[3] = { 27, 97, align };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
+    write(27, 97, align);
 }
 
 // set how many blanks should be kept on the left side
 void ofxThermalPrinter::setLeftBlankCharNums(uint8_t space) {
     if (space >= 47) space = 47;
-    
-    const uint8_t command[3] = { 27, 66, space };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
+    write(27, 66, space);
 }
 
 // set Bold Mode: on=true, off=false
 void ofxThermalPrinter::setBold(bool state) {
-    const uint8_t command[6] = { 27, 32, (uint8_t) state, 27, 69, (uint8_t) state };
-    port->write(command, 6);
-    usleep(BYTE_TIME*6);
+    write(27, 32, (uint8_t)state);
+    write(27, 69, (uint8_t)state);
 }
 
 // set Reverse printing Mode
 void ofxThermalPrinter::setReverse(bool state) {
-    const uint8_t command[3] = { 29, 66, (uint8_t)state };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
+    write(29, 66, (uint8_t)state);
 }
 
 // set Up/Down Mode
 void ofxThermalPrinter::setUpDown(bool state) {
-    const uint8_t command[3] = { 27, 123, (uint8_t) state };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
+    write(27, 123, (uint8_t)state);
 }
 
 // set Underline printing
 void ofxThermalPrinter::setUnderline(bool state) {
-    const uint8_t command[3] = { 27, 45, (uint8_t) state };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
+    write(27, 45, (uint8_t) state);
 }
 
 // enable / disable the key on the frontpanel
 void ofxThermalPrinter::setKeyPanel(bool state) {
-    const uint8_t command[4] = { 27, 99, 53, (uint8_t) state };
-    port->write(command, 4);
-    usleep(BYTE_TIME*4);
+    write( 27, 99, 53, (uint8_t) state );
 }
 
 // where should a readable barcode code be printed
 void ofxThermalPrinter::setBarcodePrintReadable(PrintReadable n) {
-    const uint8_t command[3] = { 29, 72, n };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
+    write(29, 72, n);
 }
 
 // sets the height of the barcode in pixels
 void ofxThermalPrinter::setBarcodeHeight(uint8_t height) {
     if (height <= 1) height = 1;
-    
-    const uint8_t command[3] = { 29, 104, height };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
+    write(29, 104, height);
 }
 
 // sets the barcode line widths (only 2 or 3)
@@ -189,17 +153,10 @@ void ofxThermalPrinter::setBarCodeWidth(uint8_t width) {
     if (width <= 2) width=2;
     else if (width >= 3) width=3;
     
-    const uint8_t command[3] = { 29, 119, width };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
+    write(29, 119, width);
 }
 
 void ofxThermalPrinter::print(const std::string& text){
-//    for (int i = 0; i < text.size(); i++) {
-//        const uint8_t c = text[i];
-//        port->write(&c,1);
-//        usleep(BYTE_TIME);
-//    }
     port->write(text);
     usleep(BYTE_TIME*text.size());
 }
@@ -211,14 +168,10 @@ void ofxThermalPrinter::println(const std::string& text){
 
 // prints a barcode
 void ofxThermalPrinter::printBarcode(const std::string &data, BarcodeType type) {
-    const uint8_t command[3] = { 29, 107, type };
-    port->write(command, 3);
-    usleep(BYTE_TIME*3);
+    write(29, 107, type);
     port->write(data);
     usleep(BYTE_TIME*data.size());
-    const uint8_t z = 0;
-    port->write(&z,1);
-    usleep(BYTE_TIME);
+    write(0);
 }
 
 void ofxThermalPrinter::printDitherImage(ofBaseHasPixels &_img, int _threshold){
@@ -307,14 +260,7 @@ void ofxThermalPrinter::printDitherImage(ofBaseHasPixels &_img, int _threshold){
     }
     
     for (int y=0; y<height; y++) {
-        const uint8_t command[4] = {18, 42, 1, rowBytesClipped};
-        port->write(command, 4);
-        usleep(BYTE_TIME*4);
-        
-        for (int x=0; x<rowBytesClipped; x++) {
-            port->write(&data[y*rowBytesClipped+x],1);
-            usleep(BYTE_TIME);
-        }
+        writeBytesRow(&data[y*rowBytesClipped],rowBytesClipped);
     }
 }
 
@@ -355,30 +301,74 @@ void ofxThermalPrinter::printThresholdImage(ofBaseHasPixels &_img, int threshold
     }
     
     // split images with height > 255 into parts (from Adafruit)
-//    for (int rowStart=0; rowStart<height; rowStart+=256) {
-//        
-//        int chunkHeight = height - rowStart;
-//        if (chunkHeight > 255) chunkHeight = 255;
-//        
-//        const uint8_t command[4] = {18, 42, chunkHeight, rowBytesClipped};
-//        port->write(command, 4);
-//        usleep(BYTE_TIME*4);
-//        
-//        for (int i=0; i<(rowBytesClipped*chunkHeight); i++) {
-//            port->write(&data[rowStart*rowBytesClipped+i],1);
-//            usleep(BYTE_TIME);
-//        }
-//    }
-    
-    for (int y=0; y<height; y++) {
-        const uint8_t command[4] = {18, 42, 1, rowBytesClipped};
-        port->write(command, 4);
-        usleep(BYTE_TIME*4);
+    for (int rowStart=0; rowStart<height; rowStart+=256) {
         
-        for (int x=0; x<rowBytesClipped; x++) {
-            port->write(&data[y*rowBytesClipped+x],1);
-            usleep(BYTE_TIME);
+        int chunkHeight = height - rowStart;
+        if (chunkHeight > 255) chunkHeight = 255;
+        
+        write(18, 42, chunkHeight, rowBytesClipped);
+        for (int i=0; i<(rowBytesClipped*chunkHeight); i++) {
+            write(data[rowStart*rowBytesClipped+i]);
         }
+    }
+}
+
+void ofxThermalPrinter::write(const uint8_t &_a){
+    port->write(&_a, 1);
+    usleep(BYTE_TIME);
+}
+
+void ofxThermalPrinter::write(const uint8_t &_a,const uint8_t &_b ){
+    const uint8_t command[2] = { _a, _b };
+    write(command, 2);
+    usleep(BYTE_TIME*2);
+}
+
+void ofxThermalPrinter::write(const uint8_t &_a, const uint8_t &_b, const uint8_t &_c ){
+    const uint8_t command[3] = { _a, _b, _c };
+    write(command, 3);
+    usleep(BYTE_TIME*3);
+}
+
+void ofxThermalPrinter::write(const uint8_t &_a, const uint8_t &_b, const uint8_t &_c, const uint8_t &_d){
+    const uint8_t command[4] = { _a, _b, _c, _b };
+    write(command, 4);
+    usleep(BYTE_TIME*4);
+}
+
+void ofxThermalPrinter::write(const uint8_t *_array, int _size){
+    port->write(_array, _size);
+    usleep(BYTE_TIME*_size);
+}
+
+void ofxThermalPrinter::writeBytesRow(const bool *_array, int _width){
+    if(_width>384)
+        _width = 384;
+    
+    int rowBytes        = (_width + 7) / 8;                 // Round up to next byte boundary
+    int rowBytesClipped = (rowBytes >= 48) ? 48 : rowBytes; // 384 pixels max width
+    
+    uint8_t data[rowBytesClipped];
+    memset(data,0x00,rowBytesClipped);
+    
+    for (int i = 0; i < _width; i++) {
+        uint8_t bit = _array[i]?0x00:0x01;
+        data[i/8] += (bit&0x01)<<(7-i%8);
+
+    }
+}
+
+void ofxThermalPrinter::writeBytesRow(const uint8_t *_array, int _width){
+    if(_width>48)
+        _width = 48;
+    
+    const uint8_t command[4] = {18, 42, 1, _width};
+    port->write(command, 4);
+    usleep(BYTE_TIME*4);
+    
+    for (int x=0; x<_width; x++) {
+        port->write(&_array[_width+x],1);
+        usleep(BYTE_TIME);
     }
 }
 
