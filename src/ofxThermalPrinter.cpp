@@ -11,23 +11,14 @@ void ofxThermalPrinter::open(const std::string& portName){
                                             serial::parity_none,
                                             serial::stopbits_one,
                                             serial::flowcontrol_none ));
-    
-//    port->setDTR(true);
-//    port->setRTS(true);
-    
     usleep(50000);
-    
     reset();
     usleep(50000);
     
     setControlParameter();
     setPrintDensity();
     setStatus(true);
-//    setSleepTime();
-//    setCodeTable();
-//    setCharacterSet();
-//    setBarcodePrintReadable();
-    
+
     port->flushOutput();
     
     setReverse(true);
@@ -35,10 +26,37 @@ void ofxThermalPrinter::open(const std::string& portName){
     setReverse(false);
 }
 
+void ofxThermalPrinter::write(const uint8_t &_a){
+    port->write(&_a, 1);
+    usleep(BYTE_TIME);
+}
+
+void ofxThermalPrinter::write(const uint8_t &_a,const uint8_t &_b ){
+    const uint8_t command[2] = { _a, _b };
+    write(command, 2);
+    usleep(BYTE_TIME*2);
+}
+
+void ofxThermalPrinter::write(const uint8_t &_a, const uint8_t &_b, const uint8_t &_c ){
+    const uint8_t command[3] = { _a, _b, _c };
+    write(command, 3);
+    usleep(BYTE_TIME*3);
+}
+
+void ofxThermalPrinter::write(const uint8_t &_a, const uint8_t &_b, const uint8_t &_c, const uint8_t &_d){
+    const uint8_t command[4] = { _a, _b, _c, _b };
+    write(command, 4);
+    usleep(BYTE_TIME*4);
+}
+
+void ofxThermalPrinter::write(const uint8_t *_array, int _size){
+    port->write(_array, _size);
+    usleep(BYTE_TIME*_size);
+}
+
 void ofxThermalPrinter::close(){
     port->close();
 }
-
 
 // reset the printer
 void ofxThermalPrinter::reset() {
@@ -264,6 +282,20 @@ void ofxThermalPrinter::printDitherImage(ofBaseHasPixels &_img, int _threshold){
     }
 }
 
+void ofxThermalPrinter::writeBytesRow(const uint8_t *_array, int _width){
+    if(_width>48)
+        _width = 48;
+    
+    const uint8_t command[4] = {18, 42, 1, _width};
+    port->write(command, 4);
+    usleep(BYTE_TIME*4);
+    
+    for (int x=0; x<_width; x++) {
+        port->write(&_array[_width+x],1);
+        usleep(BYTE_TIME);
+    }
+}
+
 // print Image, threshold defines grayscale to black&withe threshold level
 void ofxThermalPrinter::printThresholdImage(ofBaseHasPixels &_img, int threshold) {
     ofPixels pixels = _img.getPixelsRef();
@@ -278,97 +310,73 @@ void ofxThermalPrinter::printThresholdImage(ofBaseHasPixels &_img, int threshold
 
     int width = pixels.getWidth();
     int height = pixels.getHeight();
-    
-    int rowBytes        = (width + 7) / 8;                  // Round up to next byte boundary
-    int rowBytesClipped = (rowBytes >= 48) ? 48 : rowBytes; // 384 pixels max width
-    
-    int totalBytes = rowBytesClipped*height;
-    uint8_t data[totalBytes];
-    memset(data,0x00,totalBytes);
+
     
     for (int y=0; y < height; y++) {
+        vector<bool> data;
         for (int x=0; x < width; x++) {
-            if(x<rowBytesClipped*8){
-                uint8_t pixel;
-                if(pixels.getColor(x, y).getBrightness()>threshold){
-                    pixel = 0x00;
-                } else {
-                    pixel = 0x01;
-                }
-                data[y*rowBytesClipped+x/8] += (pixel&0x01)<<(7-x%8);
+            if(pixels.getColor(x, y).getBrightness()>threshold){
+                data.push_back(false);
+            } else {
+                data.push_back(true);
             }
         }
+        addToBuffer(data);
     }
-    
-    // split images with height > 255 into parts (from Adafruit)
-    for (int rowStart=0; rowStart<height; rowStart+=256) {
-        
-        int chunkHeight = height - rowStart;
-        if (chunkHeight > 255) chunkHeight = 255;
-        
-        write(18, 42, chunkHeight, rowBytesClipped);
-        for (int i=0; i<(rowBytesClipped*chunkHeight); i++) {
-            write(data[rowStart*rowBytesClipped+i]);
+}
+
+void ofxThermalPrinter::addToBuffer(vector<bool> _vector){
+    if(isThreadRunning()){
+        if(lock()){
+            buffer.push_back(_vector);
+            unlock();
+        }
+    } else {
+        buffer.push_back(_vector);
+        cout << "START: printing" << endl;
+        startThread();
+    }
+}
+
+void ofxThermalPrinter::threadedFunction(){
+    while(isThreadRunning()){
+        if(buffer.size()>0){
+            writeBytesArray(buffer[0]);
+            buffer.erase(buffer.begin());
+        } else {
+            stopThread();
+            cout << "END: printing" << endl;
         }
     }
 }
 
-void ofxThermalPrinter::write(const uint8_t &_a){
-    port->write(&_a, 1);
-    usleep(BYTE_TIME);
-}
-
-void ofxThermalPrinter::write(const uint8_t &_a,const uint8_t &_b ){
-    const uint8_t command[2] = { _a, _b };
-    write(command, 2);
-    usleep(BYTE_TIME*2);
-}
-
-void ofxThermalPrinter::write(const uint8_t &_a, const uint8_t &_b, const uint8_t &_c ){
-    const uint8_t command[3] = { _a, _b, _c };
-    write(command, 3);
-    usleep(BYTE_TIME*3);
-}
-
-void ofxThermalPrinter::write(const uint8_t &_a, const uint8_t &_b, const uint8_t &_c, const uint8_t &_d){
-    const uint8_t command[4] = { _a, _b, _c, _b };
-    write(command, 4);
-    usleep(BYTE_TIME*4);
-}
-
-void ofxThermalPrinter::write(const uint8_t *_array, int _size){
-    port->write(_array, _size);
-    usleep(BYTE_TIME*_size);
-}
-
-void ofxThermalPrinter::writeBytesRow(const bool *_array, int _width){
-    if(_width>384)
-        _width = 384;
+void ofxThermalPrinter::writeBytesArray(vector<bool> _line){
     
-    int rowBytes        = (_width + 7) / 8;                 // Round up to next byte boundary
+    int width = _line.size();
+    if(width>384)
+        width = 384;
+    
+    int rowBytes        = (width + 7) / 8;                 // Round up to next byte boundary
     int rowBytesClipped = (rowBytes >= 48) ? 48 : rowBytes; // 384 pixels max width
     
     uint8_t data[rowBytesClipped];
     memset(data,0x00,rowBytesClipped);
     
-    for (int i = 0; i < _width; i++) {
-        uint8_t bit = _array[i]?0x00:0x01;
+    for (int i = 0; i < width; i++) {
+        uint8_t bit = 0x00;
+        if (_line[i]){
+            bit = 0x01;
+        }
         data[i/8] += (bit&0x01)<<(7-i%8);
-
     }
-}
-
-void ofxThermalPrinter::writeBytesRow(const uint8_t *_array, int _width){
-    if(_width>48)
-        _width = 48;
     
-    const uint8_t command[4] = {18, 42, 1, _width};
+    const uint8_t command[4] = {18, 42, 1, rowBytesClipped};
     port->write(command, 4);
     usleep(BYTE_TIME*4);
     
-    for (int x=0; x<_width; x++) {
-        port->write(&_array[_width+x],1);
-        usleep(BYTE_TIME);
-    }
+    port->write(data,rowBytesClipped);
+    usleep(BYTE_TIME*rowBytesClipped);
 }
+
+
 

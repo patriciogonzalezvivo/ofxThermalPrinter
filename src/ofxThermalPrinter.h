@@ -80,8 +80,14 @@ enum BarcodeType {
     MSI
 };
 
+typedef std::shared_ptr<serial::Serial> SharedSerial;
 
-class ofxThermalPrinter {
+struct PixelsLine{
+    bool *data;
+    int size;
+};
+
+class ofxThermalPrinter : public ofThread {
 public:
     ofxThermalPrinter();
 
@@ -118,25 +124,21 @@ public:
     void    printBarcode(const std::string &data, BarcodeType type=UPCA);
     void    printDitherImage(ofBaseHasPixels &_img, int threshold);
     void    printThresholdImage(ofBaseHasPixels &_img, int threshold);
-    
+
+private:
     void    write(const uint8_t &_a);
     void    write(const uint8_t &_a, const uint8_t &_b );
     void    write(const uint8_t &_a, const uint8_t &_b, const uint8_t &_c );
     void    write(const uint8_t &_a, const uint8_t &_b, const uint8_t &_c, const uint8_t &_d);
     void    write(const uint8_t *_array, int _size);
-    void    writeBytesRow(const bool *_array, int _width);
+    
     void    writeBytesRow(const uint8_t *_array, int _width);
+    void    writeBytesArray( vector<bool> _line );
     
-private:
-    static uint8_t getHighByte(std::size_t d){
-        return (uint8_t)(d >> 8);
-    }
+    void    addToBuffer(vector<bool> _line);
+    void    threadedFunction();
     
-    static uint8_t getLowByte(std::size_t d){
-        return (uint8_t)(d & 0xFF);
-    }
+    vector< vector<bool> > buffer;
     
-    typedef std::shared_ptr<serial::Serial> SharedSerial;
-
     SharedSerial    port;
 };

@@ -7,15 +7,6 @@ void ofApp::setup(){
 
     printer.open("/dev/tty.PL2303-00002014");
     
-    
-    
-
-
-
-    
-    
-//    printer.printBarcode("12345678", EAN8);
-    
     img.loadImage("logo.jpg");
     img.resize(img.getWidth()*2,img.getHeight()*2);
     cout << "Image at " << img.getWidth() << "x" << img.getHeight() << endl;
@@ -44,7 +35,7 @@ void ofApp::exit(){
 //--------------------------------------------------------------
 void ofApp::keyPressed  (int key){ 
 	if(key == ' '){
-        printer.printDitherImage(img,80);
+        printer.printThresholdImage(img,80);
     } else if (key == 't'){
         printer.println("A little tree");
     } else if (key == 'v'){
@@ -77,6 +68,8 @@ void ofApp::keyPressed  (int key){
         printer.setAlign(RIGHT);
         printer.println("right align");
         printer.setAlign(LEFT);
+    } else if(key == 'c'){
+        printer.printBarcode("12345678", EAN8);
     }
 }
 
