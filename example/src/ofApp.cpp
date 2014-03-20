@@ -8,8 +8,6 @@ void ofApp::setup(){
     printer.open("/dev/tty.PL2303-00002014");
     
     img.loadImage("logo.jpg");
-    img.resize(img.getWidth()*2,img.getHeight()*2);
-    
     video.initGrabber(640, 480);
 }
 
@@ -37,7 +35,7 @@ void ofApp::keyPressed  (int key){
     } else if (key == 'r'){
         printer.setReverse(true);
         printer.println("Reverse ON");
-        printer.setReverse(false);
+        printer.setUnderline(true);
     } else if(key == 'b'){
         printer.setBold(true);
         printer.println("Bold ON");
@@ -65,7 +63,10 @@ void ofApp::keyPressed  (int key){
     } else if(key == 'c'){
         printer.printBarcode("12345678", EAN8);
     } else if(key != OF_KEY_ESC){
-        printer.println("Patricio Gonzalez Vivo.com");
+        printer.setBold(true);
+        printer.println("ofxThermalPrinter");
+        printer.setBold(false);
+        printer.println("by Patricio Gonzalez Vivo.com");
         printer.printThresholdImage(img,127);
     }
 }
