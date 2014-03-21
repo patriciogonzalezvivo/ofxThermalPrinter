@@ -217,14 +217,17 @@ void ofxThermalPrinter::printBarcode(const std::string &data, BarcodeType type) 
 }
 
 void ofxThermalPrinter::printDitherImage(ofBaseHasPixels &_img, int _threshold){
-    ofPixels pixels = _img.getPixelsRef();
+    printDitherPixels(_img.getPixelsRef(),_threshold);
+}
+
+void ofxThermalPrinter::printDitherPixels(ofPixels &_pixels, int _threshold){
+    ofPixels pixels = _pixels;
     
-    if(_img.getPixelsRef().getWidth() >= 384){
-        float w = 1.0;
-        float h = pixels.getHeight()/pixels.getWidth();
-        pixels.resize(384.0, h*384.0);
-    } else {
-        pixels = _img.getPixelsRef();
+    if(pixels.getWidth() >= 384){
+        float w = 384.0;
+        float h = (pixels.getHeight()/pixels.getWidth())*384.0;
+        cout << "Sacaling image from " << pixels.getWidth() << "x" << pixels.getHeight() << " to " << w << "x" << h << endl;
+        pixels.resize(w, h);
     }
     
     int width = pixels.getWidth();
@@ -288,15 +291,18 @@ void ofxThermalPrinter::printDitherImage(ofBaseHasPixels &_img, int _threshold){
 }
 
 // print Image, threshold defines grayscale to black&withe threshold level
-void ofxThermalPrinter::printThresholdImage(ofBaseHasPixels &_img, int threshold) {
-    ofPixels pixels = _img.getPixelsRef();
+void ofxThermalPrinter::printThresholdImage(ofBaseHasPixels &_img, int _threshold) {
+    printThresholdPixels(_img.getPixelsRef(), _threshold);
+}
 
-    if(_img.getPixelsRef().getWidth() >= 384){
-        float w = 1.0;
-        float h = pixels.getHeight()/pixels.getWidth();
-        pixels.resize(384.0, h*384.0);
-    } else {
-        pixels = _img.getPixelsRef();
+void ofxThermalPrinter::printThresholdPixels(ofPixels &_pixels, int threshold) {
+    ofPixels pixels = _pixels;
+
+    if(pixels.getWidth() >= 384){
+        float w = 384.0;
+        float h = (pixels.getHeight()/pixels.getWidth())*384.0;
+        cout << "Sacaling image from " << pixels.getWidth() << "x" << pixels.getHeight() << " to " << w << "x" << h << endl;
+        pixels.resize(w, h);
     }
 
     int width = pixels.getWidth();

@@ -124,7 +124,10 @@ public:
     void    printBarcode(const std::string &data, BarcodeType type=UPCA);
     void    printPixelRow( vector<bool> _row );
     
+    void    printDitherPixels(ofPixels &_pixels, int threshold=127);
     void    printDitherImage(ofBaseHasPixels &_img, int threshold=127);
+    
+    void    printThresholdPixels(ofPixels &_pixels, int threshold);
     void    printThresholdImage(ofBaseHasPixels &_img, int threshold);
 
 private:
