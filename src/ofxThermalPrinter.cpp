@@ -216,19 +216,19 @@ void ofxThermalPrinter::printBarcode(const std::string &data, BarcodeType type) 
     }
 }
 
-void ofxThermalPrinter::printDitherImage(ofBaseHasPixels &_img, int _threshold){
-    printDitherPixels(_img.getPixelsRef(),_threshold);
+void ofxThermalPrinter::printImage(ofBaseHasPixels &_img, int _threshold){
+    printPixels(_img.getPixelsRef(),_threshold);
 }
 
-void ofxThermalPrinter::printDitherPixels(ofPixels &_pixels, int _threshold){
+void ofxThermalPrinter::printPixels(ofPixels &_pixels, int _threshold){
     ofPixels pixels = _pixels;
     
-    if(pixels.getWidth() >= 384){
-        float w = 384.0;
-        float h = (pixels.getHeight()/pixels.getWidth())*384.0;
-        cout << "Sacaling image from " << pixels.getWidth() << "x" << pixels.getHeight() << " to " << w << "x" << h << endl;
-        pixels.resize(w, h);
-    }
+//    if(pixels.getWidth() >= 384){
+//        float w = 384.0;
+//        float h = (pixels.getHeight()/pixels.getWidth())*384.0;
+//        cout << "Sacaling image from " << pixels.getWidth() << "x" << pixels.getHeight() << " to " << w << "x" << h << endl;
+//        pixels.resize(w, h);
+//    }
     
     int width = pixels.getWidth();
     int height = pixels.getHeight();
@@ -290,36 +290,6 @@ void ofxThermalPrinter::printDitherPixels(ofPixels &_pixels, int _threshold){
     }
 }
 
-// print Image, threshold defines grayscale to black&withe threshold level
-void ofxThermalPrinter::printThresholdImage(ofBaseHasPixels &_img, int _threshold) {
-    printThresholdPixels(_img.getPixelsRef(), _threshold);
-}
-
-void ofxThermalPrinter::printThresholdPixels(ofPixels &_pixels, int threshold) {
-    ofPixels pixels = _pixels;
-
-    if(pixels.getWidth() >= 384){
-        float w = 384.0;
-        float h = (pixels.getHeight()/pixels.getWidth())*384.0;
-        cout << "Sacaling image from " << pixels.getWidth() << "x" << pixels.getHeight() << " to " << w << "x" << h << endl;
-        pixels.resize(w, h);
-    }
-
-    int width = pixels.getWidth();
-    int height = pixels.getHeight();
-    for (int y=0; y < height; y++) {
-        vector<bool> data;
-        for (int x=0; x < width; x++) {
-            if(pixels.getColor(x, y).getBrightness()>threshold){
-                data.push_back(false);
-            } else {
-                data.push_back(true);
-            }
-        }
-        addToBuffer(data);
-    }
-}
-
 void ofxThermalPrinter::addToBuffer(vector<bool> _vector){
     if(isThreadRunning()){
         if(lock()){
@@ -328,8 +298,6 @@ void ofxThermalPrinter::addToBuffer(vector<bool> _vector){
         }
     } else {
         buffer.push_back(_vector);
-        
-        cout << "START: printing" << endl;
         bPrinting = true;
         startThread();
     }
@@ -343,7 +311,6 @@ void ofxThermalPrinter::threadedFunction(){
         } else {
             stopThread();
             bPrinting = false;
-            cout << "END: printing" << endl;
         }
     }
 }
