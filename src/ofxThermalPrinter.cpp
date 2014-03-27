@@ -223,13 +223,6 @@ void ofxThermalPrinter::printImage(ofBaseHasPixels &_img, int _threshold){
 void ofxThermalPrinter::printPixels(ofPixels &_pixels, int _threshold){
     ofPixels pixels = _pixels;
     
-//    if(pixels.getWidth() >= 384){
-//        float w = 384.0;
-//        float h = (pixels.getHeight()/pixels.getWidth())*384.0;
-//        cout << "Sacaling image from " << pixels.getWidth() << "x" << pixels.getHeight() << " to " << w << "x" << h << endl;
-//        pixels.resize(w, h);
-//    }
-    
     int width = pixels.getWidth();
     int height = pixels.getHeight();
     
@@ -288,6 +281,8 @@ void ofxThermalPrinter::printPixels(ofPixels &_pixels, int _threshold){
         }
         addToBuffer(data);
     }
+    
+    delete []GrayArray;
 }
 
 void ofxThermalPrinter::addToBuffer(vector<bool> _vector){
