@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3D0CD4E818D752C600220E82 /* unix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 3D0CD4E118D752C600220E82 /* unix.cc */; };
-		3D0CD4E918D752C600220E82 /* win.cc in Sources */ = {isa = PBXBuildFile; fileRef = 3D0CD4E318D752C600220E82 /* win.cc */; };
-		3D0CD4EA18D752C600220E82 /* serial.cc in Sources */ = {isa = PBXBuildFile; fileRef = 3D0CD4E518D752C600220E82 /* serial.cc */; };
-		843239fd544c9e513aed0d86214eacfd /* ofxThermalPrinter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 462b53c0c5114b8263832b0e8e4bf5b3 /* ofxThermalPrinter.cpp */; };
+		3D9965AF18E73F64001436A3 /* unix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 3D9965A618E73F64001436A3 /* unix.cc */; };
+		3D9965B018E73F64001436A3 /* win.cc in Sources */ = {isa = PBXBuildFile; fileRef = 3D9965A818E73F64001436A3 /* win.cc */; };
+		3D9965B118E73F64001436A3 /* ofxThermalPrinter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D9965AA18E73F64001436A3 /* ofxThermalPrinter.cpp */; };
+		3D9965B218E73F64001436A3 /* serial.cc in Sources */ = {isa = PBXBuildFile; fileRef = 3D9965AC18E73F64001436A3 /* serial.cc */; };
 		BBAB23CB13894F3D00AA2426 /* GLUT.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BBAB23BE13894E4700AA2426 /* GLUT.framework */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E45BE97B0E8CC7DD009D7055 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE9710E8CC7DD009D7055 /* AGL.framework */; };
@@ -64,15 +64,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3D0CD4E118D752C600220E82 /* unix.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = unix.cc; sourceTree = "<group>"; };
-		3D0CD4E218D752C600220E82 /* unix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unix.h; sourceTree = "<group>"; };
-		3D0CD4E318D752C600220E82 /* win.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = win.cc; sourceTree = "<group>"; };
-		3D0CD4E418D752C600220E82 /* win.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = win.h; sourceTree = "<group>"; };
-		3D0CD4E518D752C600220E82 /* serial.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = serial.cc; sourceTree = "<group>"; };
-		3D0CD4E618D752C600220E82 /* serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = serial.h; sourceTree = "<group>"; };
-		3D0CD4E718D752C600220E82 /* v8stdint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = v8stdint.h; sourceTree = "<group>"; };
-		462b53c0c5114b8263832b0e8e4bf5b3 /* ofxThermalPrinter.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxThermalPrinter.cpp; path = ../../../addons/ofxThermalPrinter/src/ofxThermalPrinter.cpp; sourceTree = SOURCE_ROOT; };
-		5488cc880fe8db73e2e25196899982b9 /* ofxThermalPrinter.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxThermalPrinter.h; path = ../../../addons/ofxThermalPrinter/src/ofxThermalPrinter.h; sourceTree = SOURCE_ROOT; };
+		3D9965A618E73F64001436A3 /* unix.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = unix.cc; sourceTree = "<group>"; };
+		3D9965A718E73F64001436A3 /* unix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unix.h; sourceTree = "<group>"; };
+		3D9965A818E73F64001436A3 /* win.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = win.cc; sourceTree = "<group>"; };
+		3D9965A918E73F64001436A3 /* win.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = win.h; sourceTree = "<group>"; };
+		3D9965AA18E73F64001436A3 /* ofxThermalPrinter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxThermalPrinter.cpp; sourceTree = "<group>"; };
+		3D9965AB18E73F64001436A3 /* ofxThermalPrinter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxThermalPrinter.h; sourceTree = "<group>"; };
+		3D9965AC18E73F64001436A3 /* serial.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = serial.cc; sourceTree = "<group>"; };
+		3D9965AD18E73F64001436A3 /* serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = serial.h; sourceTree = "<group>"; };
+		3D9965AE18E73F64001436A3 /* v8stdint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = v8stdint.h; sourceTree = "<group>"; };
 		BBAB23BE13894E4700AA2426 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = ../../../libs/glut/lib/osx/GLUT.framework; sourceTree = "<group>"; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E45BE9710E8CC7DD009D7055 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
@@ -127,50 +127,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2ecd902c0fc04bcc03ade5cd75057d8e /* src */ = {
+		3D9965A418E73F64001436A3 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				5488cc880fe8db73e2e25196899982b9 /* ofxThermalPrinter.h */,
-				462b53c0c5114b8263832b0e8e4bf5b3 /* ofxThermalPrinter.cpp */,
+				3D9965A518E73F64001436A3 /* impl */,
+				3D9965AA18E73F64001436A3 /* ofxThermalPrinter.cpp */,
+				3D9965AB18E73F64001436A3 /* ofxThermalPrinter.h */,
+				3D9965AC18E73F64001436A3 /* serial.cc */,
+				3D9965AD18E73F64001436A3 /* serial.h */,
+				3D9965AE18E73F64001436A3 /* v8stdint.h */,
 			);
 			name = src;
+			path = ../src;
 			sourceTree = "<group>";
 		};
-		3D0CD4DD18D752C600220E82 /* lib */ = {
+		3D9965A518E73F64001436A3 /* impl */ = {
 			isa = PBXGroup;
 			children = (
-				3D0CD4DE18D752C600220E82 /* serial */,
-			);
-			name = lib;
-			path = ../lib;
-			sourceTree = "<group>";
-		};
-		3D0CD4DE18D752C600220E82 /* serial */ = {
-			isa = PBXGroup;
-			children = (
-				3D0CD4DF18D752C600220E82 /* serial */,
-			);
-			path = serial;
-			sourceTree = "<group>";
-		};
-		3D0CD4DF18D752C600220E82 /* serial */ = {
-			isa = PBXGroup;
-			children = (
-				3D0CD4E018D752C600220E82 /* impl */,
-				3D0CD4E518D752C600220E82 /* serial.cc */,
-				3D0CD4E618D752C600220E82 /* serial.h */,
-				3D0CD4E718D752C600220E82 /* v8stdint.h */,
-			);
-			path = serial;
-			sourceTree = "<group>";
-		};
-		3D0CD4E018D752C600220E82 /* impl */ = {
-			isa = PBXGroup;
-			children = (
-				3D0CD4E118D752C600220E82 /* unix.cc */,
-				3D0CD4E218D752C600220E82 /* unix.h */,
-				3D0CD4E318D752C600220E82 /* win.cc */,
-				3D0CD4E418D752C600220E82 /* win.h */,
+				3D9965A618E73F64001436A3 /* unix.cc */,
+				3D9965A718E73F64001436A3 /* unix.h */,
+				3D9965A818E73F64001436A3 /* win.cc */,
+				3D9965A918E73F64001436A3 /* win.h */,
 			);
 			path = impl;
 			sourceTree = "<group>";
@@ -178,8 +155,7 @@
 		7a5fe121d3645c5252e80cbd8ccf9d63 /* ofxThermalPrinter */ = {
 			isa = PBXGroup;
 			children = (
-				3D0CD4DD18D752C600220E82 /* lib */,
-				2ecd902c0fc04bcc03ade5cd75057d8e /* src */,
+				3D9965A418E73F64001436A3 /* src */,
 			);
 			name = ofxThermalPrinter;
 			sourceTree = "<group>";
@@ -358,12 +334,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D0CD4E918D752C600220E82 /* win.cc in Sources */,
-				3D0CD4EA18D752C600220E82 /* serial.cc in Sources */,
+				3D9965B018E73F64001436A3 /* win.cc in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
+				3D9965B218E73F64001436A3 /* serial.cc in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
-				843239fd544c9e513aed0d86214eacfd /* ofxThermalPrinter.cpp in Sources */,
-				3D0CD4E818D752C600220E82 /* unix.cc in Sources */,
+				3D9965B118E73F64001436A3 /* ofxThermalPrinter.cpp in Sources */,
+				3D9965AF18E73F64001436A3 /* unix.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
