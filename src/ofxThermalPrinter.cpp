@@ -286,26 +286,30 @@ void ofxThermalPrinter::printPixels(ofPixels &_pixels, int _threshold){
 }
 
 void ofxThermalPrinter::addToBuffer(vector<bool> _vector){
-    if(isThreadRunning()){
-        if(lock()){
+    if(bConnected){
+        if(isThreadRunning()){
+            if(lock()){
+                buffer.push_back(_vector);
+                unlock();
+            }
+        } else {
             buffer.push_back(_vector);
-            unlock();
+            bPrinting = true;
+            startThread();
         }
-    } else {
-        buffer.push_back(_vector);
-        bPrinting = true;
-        startThread();
     }
 }
 
 void ofxThermalPrinter::threadedFunction(){
-    while(isThreadRunning()){
-        if(buffer.size()>0){
-            printPixelRow(buffer[0]);
-            buffer.erase(buffer.begin());
-        } else {
-            stopThread();
-            bPrinting = false;
+    if(bConnected){
+        while(isThreadRunning()){
+            if(buffer.size()>0){
+                printPixelRow(buffer[0]);
+                buffer.erase(buffer.begin());
+            } else {
+                stopThread();
+                bPrinting = false;
+            }
         }
     }
 }
