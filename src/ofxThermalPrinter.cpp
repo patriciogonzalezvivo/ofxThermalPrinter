@@ -21,7 +21,7 @@ bool ofxThermalPrinter::open(const std::string& portName){
         bConnected = false;
         return bConnected;
     }
-
+    
     bConnected = true;
     usleep(50000);
     reset();
@@ -30,7 +30,7 @@ bool ofxThermalPrinter::open(const std::string& portName){
     setControlParameter();
     setPrintDensity();
     setStatus(true);
-
+    
     port->flushOutput();
     
     setReverse(true);
@@ -311,30 +311,32 @@ void ofxThermalPrinter::threadedFunction(){
 }
 
 void ofxThermalPrinter::printPixelRow(vector<bool> _line){
-    int width = _line.size();
-    if(width>384)
-        width = 384;
-    
-    int rowBytes        = (width + 7) / 8;                 // Round up to next byte boundary
-    int rowBytesClipped = (rowBytes >= 48) ? 48 : rowBytes; // 384 pixels max width
-    
-    uint8_t data[rowBytesClipped];
-    memset(data,0x00,rowBytesClipped);
-    
-    for (int i = 0; i < width; i++) {
-        uint8_t bit = 0x00;
-        if (_line[i]){
-            bit = 0x01;
+    if(bConnected){
+        int width = _line.size();
+        if(width>384)
+            width = 384;
+        
+        int rowBytes        = (width + 7) / 8;                 // Round up to next byte boundary
+        int rowBytesClipped = (rowBytes >= 48) ? 48 : rowBytes; // 384 pixels max width
+        
+        uint8_t data[rowBytesClipped];
+        memset(data,0x00,rowBytesClipped);
+        
+        for (int i = 0; i < width; i++) {
+            uint8_t bit = 0x00;
+            if (_line[i]){
+                bit = 0x01;
+            }
+            data[i/8] += (bit&0x01)<<(7-i%8);
         }
-        data[i/8] += (bit&0x01)<<(7-i%8);
+        
+        const uint8_t command[4] = {18, 42, 1, rowBytesClipped};
+        port->write(command, 4);
+        usleep(BYTE_TIME*4);
+        
+        port->write(data,rowBytesClipped);
+        usleep(BYTE_TIME*rowBytesClipped);
     }
-    
-    const uint8_t command[4] = {18, 42, 1, rowBytesClipped};
-    port->write(command, 4);
-    usleep(BYTE_TIME*4);
-    
-    port->write(data,rowBytesClipped);
-    usleep(BYTE_TIME*rowBytesClipped);
 }
 
 
