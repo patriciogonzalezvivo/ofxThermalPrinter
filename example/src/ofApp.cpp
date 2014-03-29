@@ -29,7 +29,7 @@ void ofApp::exit(){
 //--------------------------------------------------------------
 void ofApp::keyPressed  (int key){ 
 	if(key == ' '){
-        printer.printDitherImage(video);
+        printer.printImage(video);
     } else if (key == 't'){
         printer.println("Hello World!!");
     } else if (key == 'r'){
@@ -67,7 +67,7 @@ void ofApp::keyPressed  (int key){
         printer.println("ofxThermalPrinter");
         printer.setBold(false);
         printer.println("by Patricio Gonzalez Vivo.com");
-        printer.printThresholdImage(img,127);
+        printer.printImage(img,127);
     }
 }
 
