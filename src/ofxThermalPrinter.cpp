@@ -216,11 +216,11 @@ void ofxThermalPrinter::printBarcode(const std::string &data, BarcodeType type) 
     }
 }
 
-void ofxThermalPrinter::printImage(ofBaseHasPixels &_img, int _threshold){
-    printPixels(_img.getPixelsRef(),_threshold);
+void ofxThermalPrinter::print(ofBaseHasPixels &_img, int _threshold){
+    print(_img.getPixelsRef(),_threshold);
 }
 
-void ofxThermalPrinter::printPixels(ofPixels &_pixels, int _threshold){
+void ofxThermalPrinter::print(ofPixels &_pixels, int _threshold){
     ofPixels pixels = _pixels;
     
     int width = pixels.getWidth();

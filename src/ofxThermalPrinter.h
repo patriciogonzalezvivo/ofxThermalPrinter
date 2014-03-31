@@ -120,12 +120,12 @@ public:
     void    setBarCodeWidth(uint8_t width=3);
     
     void    print(const std::string &_line);
+    void    print(ofPixels &_pixels, int threshold=127);
+    void    print(ofBaseHasPixels &_img, int threshold=127);
     void    println(const std::string &_line);
+    
     void    printBarcode(const std::string &data, BarcodeType type=UPCA);
     void    printPixelRow( vector<bool> _row );
-    
-    void    printPixels(ofPixels &_pixels, int threshold=127);
-    void    printImage(ofBaseHasPixels &_img, int threshold=127);
     
 private:
     void    write(const uint8_t &_a);
