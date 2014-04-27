@@ -1,6 +1,6 @@
 [![Adafruit Mini Thermal Printer](http://www.adafruit.com/images/970x728/597-00.jpg)](http://www.adafruit.com/products/597)
 
-This [openFrameworks](http://www.openframeworks.cc/) addon let you connect Adafruit's Mini Thermal Printer to any of your [openFrameworks](http://www.openframeworks.cc/) projects.
+[This openFrameworks addon](https://github.com/patriciogonzalezvivo/ofxThermalPrinter) let you connect Adafruit's Mini Thermal Printer to any of your [openFrameworks](http://www.openframeworks.cc/) projects.
 
 # Installing 
 
