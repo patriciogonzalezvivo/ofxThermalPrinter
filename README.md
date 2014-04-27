@@ -11,7 +11,7 @@ Clone [this repository](https://github.com/patriciogonzalezvivo/ofxThermalPrinte
 
 # Setting up
 
-## On MacOS/Linux
+#### On MacOS/Linux
 
 You can use the printer directly from your computer using an [USB to TTL Serial Cable](http://www.adafruit.com/products/954)
 
@@ -19,7 +19,7 @@ You need to research witch port open in the `/dev/`. Should look like this:
 
 	printer.open("/dev/tty.PL2303-00002014");
 
-## on RaspberryPi
+#### on RaspberryPi
 
 Follow [this](http://learn.adafruit.com/pi-thermal-printer/soldering) instructions for the connection of the wires and GPIOs. (Also [here](http://natemcbean.com/2012/11/rpi-thermal-printer/) is another nice tutorial)
 
