@@ -1,4 +1,8 @@
-# MacOS/Linux setup
+![Adafruit Mini Thermal Printer](http://www.adafruit.com/images/970x728/597-00.jpg)
+
+This [openFrameworks](http://www.openframeworks.cc/) addon let you connect Adafruit's Mini Thermal Printer to any of your [openFrameworks](http://www.openframeworks.cc/) projects.
+
+# On MacOS/Linux
 
 You can use the printer directly from your computer using an [USB to TTL Serial Cable](http://www.adafruit.com/products/954)
 
@@ -6,7 +10,7 @@ You need to research witch port open in the `/dev/`. Should look like this:
 
 	printer.open("/dev/tty.PL2303-00002014");
 
-# RaspberryPi setup
+# on RaspberryPi
 
 Follow [this](http://learn.adafruit.com/pi-thermal-printer/soldering) instructions for the connection of the wires and GPIOs. (Also [here](http://natemcbean.com/2012/11/rpi-thermal-printer/) is another nice tutorial)
 
@@ -37,3 +41,34 @@ Restart your RaspberryPi using:
 The in your code open the connection at:
 
 	printer.open("/dev/ttyAMA0");
+
+# Usage 
+
+Once the printer connection is open you can print text:
+
+	printer.println("hello world");
+
+Dithered images:
+
+	printer.printImage(ofImage("image.jpg"));
+
+And Barcodes:
+
+	printer.printBarcode("12345678", EAN8);
+
+You will also find that there are lot's of ways to style your text;
+
+	printer.setAlign(LEFT);
+	printer.setAlign(MIDDLE);
+	printer.setAlign(RIGHT);
+
+	printer.setBold(true);
+  printer.setBold(false);
+
+	printer.setReverse(true);
+	printer.setReverse(false);
+
+  printer.setUnderline(true);
+	printer.setUnderline(false);
+
+Happy projects for you ;)
