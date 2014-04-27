@@ -4,7 +4,7 @@ This [openFrameworks](http://www.openframeworks.cc/) addon let you connect Adafr
 
 # Installing 
 
-Clone this addon repository into your `openFrameworks/addons` folder:
+Clone [this repository](https://github.com/patriciogonzalezvivo/ofxThermalPrinter) into your `openFrameworks/addons` folder:
 
 	cd openFrameworks/addons
 	git clone https://github.com/patriciogonzalezvivo/ofxThermalPrinter
