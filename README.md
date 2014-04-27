@@ -72,3 +72,5 @@ You will also find that there are lot's of ways to style your text;
 	printer.setUnderline(false);
 
 Happy projects for you ;)
+
+<iframe class="vine-embed" src="https://vine.co/v/MejwEIm6ael/embed/simple" width="575" height="575" frameborder="0"></iframe><script async src="//platform.vine.co/static/scripts/embed.js" charset="utf-8"></script>
