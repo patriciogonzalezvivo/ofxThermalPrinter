@@ -1,8 +1,17 @@
-![Adafruit Mini Thermal Printer](http://www.adafruit.com/images/970x728/597-00.jpg)
+[![Adafruit Mini Thermal Printer](http://www.adafruit.com/images/970x728/597-00.jpg)](http://www.adafruit.com/products/597)
 
 This [openFrameworks](http://www.openframeworks.cc/) addon let you connect Adafruit's Mini Thermal Printer to any of your [openFrameworks](http://www.openframeworks.cc/) projects.
 
-# On MacOS/Linux
+# Installing 
+
+Clone this addon repository into your `openFrameworks/addons` folder:
+
+	cd openFrameworks/addons
+	git clone https://github.com/patriciogonzalezvivo/ofxThermalPrinter
+
+# Setting up
+
+## On MacOS/Linux
 
 You can use the printer directly from your computer using an [USB to TTL Serial Cable](http://www.adafruit.com/products/954)
 
@@ -10,7 +19,7 @@ You need to research witch port open in the `/dev/`. Should look like this:
 
 	printer.open("/dev/tty.PL2303-00002014");
 
-# on RaspberryPi
+## on RaspberryPi
 
 Follow [this](http://learn.adafruit.com/pi-thermal-printer/soldering) instructions for the connection of the wires and GPIOs. (Also [here](http://natemcbean.com/2012/11/rpi-thermal-printer/) is another nice tutorial)
 
