@@ -33,8 +33,8 @@ bool ofxThermalPrinter::open(const std::string& portName){
     
     port->flushOutput();
     
-//    setReverse(true);
-//    println("Reverse ON");
+    setReverse(true);
+    println("Reverse ON");
     setReverse(false);
     
     return bConnected;
